@@ -211,7 +211,7 @@ rule combinedAndFilter:
     
     
 
-    /usr/bin/python /dnv_wf_cpu/test_intersect.py -g {input[0]} -d {input[1]}
+    /opt/conda/bin/python /dnv_wf_cpu/test_intersect.py -g {input[0]} -d {input[1]}
     cat {OUT_DIR}/{params.prefix}/{params.prefix}_combined_out.vcf |  awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf
     zcat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.dv.vcf.gz  | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
     grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep  'AC=1' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
@@ -227,7 +227,7 @@ rule combinedAndFilter:
     echo $trio
     echo "Run filter script"
     #Python script that filters for parents with no alt allele, depth of set value, GQ of set value, and allele balance of .25
-    /usr/bin/python /dnv_wf_cpu/filter_glnexuscombined_updated.py {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf $trio $actual {params.gq} {params.depth}
+    /opt/conda/bin/python /dnv_wf_cpu/filter_glnexuscombined_updated.py {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf $trio $actual {params.gq} {params.depth}
 
     echo "Make position file"
     cat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_20_depth_10.vcf | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_{params.gq}_depth_{params.depth}_position.vcf
