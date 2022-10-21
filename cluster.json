@@ -1,0 +1,42 @@
+{
+    "__default__" :
+    {
+        "n" : 1,
+        "mem": "6G"
+    },
+    "gatk":
+    {
+        "n":2,
+        "mem": "64G"
+    },
+    "deepvariant":
+    {
+        "n":32,
+        "mem": "52G"
+    },
+    "grabFamilies_DV":
+    {
+        "n":4,
+        "mem": "10G"
+    },
+    "grabFamilies_HC":
+    {
+        "n":4,
+        "mem": "10G"
+    },
+    "combinedAndFilter":
+    {
+        "n":1,
+        "mem": "16G"
+    },
+    "glnexus_hc":
+    {
+        "n":32,
+        "mem": "256G"
+    },
+    "glnexus_dv":
+    {
+        "n":32,
+        "mem": "70G"
+    }
+}
