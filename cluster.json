@@ -4,16 +4,6 @@
         "n" : 1,
         "mem": "6G"
     },
-    "gatk":
-    {
-        "n":2,
-        "mem": "64G"
-    },
-    "deepvariant":
-    {
-        "n":32,
-        "mem": "52G"
-    },
     "grabFamilies_DV":
     {
         "n":4,
@@ -32,7 +22,7 @@
     "glnexus_hc":
     {
         "n":32,
-        "mem": "256G"
+        "mem": "100G"
     },
     "glnexus_dv":
     {
