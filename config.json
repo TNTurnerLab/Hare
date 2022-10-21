@@ -1,18 +1,18 @@
 {
   "reference": "/reference/GRCh38_full_analysis_set_plus_decoy_hla.fa",
   "family_file": "/dnv_wf_cpu/dnv_wf_test.txt",
-  "glnexus_file_dv_vcf": "/dnv_wf_cpu/dv_vcf_big",
-  "glnexus_file_hc_vcf": "/dnv_wf_cpu/hc_vcf_big",
-  "glnexus_file_dv_bcf": "/dnv_wf_cpu/dv_bcf_big",
-  "glnexus_file_hc_bcf": "/dnv_wf_cpu/hc_bcf_big",
+  "glnexus_file_dv_vcf": "/dnv_wf_cpu/dv_vcf",
+  "glnexus_file_hc_vcf": "/dnv_wf_cpu/hc_vcf",
+  "glnexus_file_dv_bcf": "/dnv_wf_cpu/dv_bcf",
+  "glnexus_file_hc_bcf": "/dnv_wf_cpu/hc_bcf",
   "regions": "/region" ,
   "gq_value": 20,
   "depth_value":10,
   "gatk_out":"/gatk",
   "dv_out":"/dv",
-  "out_dir": "/dnv_wf_cpu/out_test_hare_1.1",
-  "suffix_dv": ".test_4.0.0_a100_2gpu_tychele.dv.g.vcf.gz",
-  "suffix_hc": ".test_4.0.0_a100_2gpu_tychele.hc.g.vcf.gz"
+  "out_dir": "/dnv_wf_cpu/out_hare",
+  "suffix_dv": ".deepvariant.gvcf.gz",
+  "suffix_hc": ".gatk.gvcf.gz"
 }
 
 
