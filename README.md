@@ -79,6 +79,10 @@ The main output files are:
 * out_hare/<child_name>/<child_name>.glnexus.family.combined_intersection_filtered_gq_<gq_value>_depth_<depth_value>_position_all.vcf
 
   * This file holds the *de novo* variants specifically within CpG regions.
+  
+This current version has able to find almost all of the same de novo variants found from the original pipeline.  The NA12878 trio from the 1000 Genomes Collection 30x WGS data is used as an example:
+
+![NA12878](https://github.com/TNTurnerLab/Hare/blob/main/docs/compare_old_pipeline_to_1.1.png)
  
  ### Software Used:
 * bcftools v1.11 
