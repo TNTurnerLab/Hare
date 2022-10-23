@@ -61,7 +61,7 @@ tnturnerlab/hare:v1.1
 We also provide the Dockerfile if you would like to make modifications.  
 
 ```
-docker run -v "/path/to/hare/code:/dnv_wf_cpu" -v "/path/to/reference:/reference" -v "/path/to/deepvariant/output:/dv" -v "/path/to/gatk/output:/gatk"  -v "/path/to/RepeatMasker/region/files:region" tnturnerlab/hare:v1.1 /opt/conda/envs/snake/bin/snakemake -s /dnv_wf_cpu/hare_1.1.smk -j 6 --cores -k --rerun-incomplete -w 120 
+docker run -v "/path/to/hare/code:/dnv_wf_cpu" -v "/path/to/reference:/reference" -v "/path/to/deepvariant/output:/dv" -v "/path/to/gatk/output:/gatk"  -v "/path/to/RepeatMasker/region/files:/region" tnturnerlab/hare:v1.1 /opt/conda/envs/snake/bin/snakemake -s /dnv_wf_cpu/hare_1.1.smk -j 6 --cores -k --rerun-incomplete -w 120 
 ```
  # Output
  Below is a brief descirption of the main output folders from Hare:
