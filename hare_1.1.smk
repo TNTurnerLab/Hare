@@ -11,7 +11,7 @@ GLNEXUS_FILE_DV_BCF=config["glnexus_file_dv_bcf"]
 GLNEXUS_FILE_HC_BCF=config["glnexus_file_hc_bcf"]
 GLNEXUS_FILE_DV_VCF=config["glnexus_file_dv_vcf"]
 GLNEXUS_FILE_HC_VCF=config["glnexus_file_hc_vcf"]
-
+CHROM_LENGTH=config["chrom_length"]
 REGIONS=config["regions"]
 GQ_VALUE=config["gq_value"]
 DEPTH_VALUE=config["depth_value"]
@@ -64,7 +64,8 @@ if OUT_DIR.endswith('/') and OUT_DIR!='':
     OUT_DIR=OUT_DIR[:-1]
 if GATK_OUT.endswith('/') and GATK_OUT!='':
     GATK_OUT=GATK_OUT[:-1]
-
+if CHROM_LENGTH is None:
+    CHROM_LENGTH==1
 
 FULL={}
 FAMILIES = []
@@ -209,9 +210,9 @@ rule combinedAndFilter:
     #Filters out -L chromosomes that are not -L chr1-22, grabbing variants with an allele count of 1, variants that were found from both DV and HC (defined as set=Intersection), and removes variants that are either 10 A's or T's in a row.
     echo "Combining files"
     
-    
-
-    /opt/conda/bin/python /dnv_wf_cpu/test_intersect.py -g {input[0]} -d {input[1]}
+    ref=$( head -n 1 {REFERENCE} | cut -d' ' -f 1)
+    echo $ref
+    /opt/conda/bin/python /dnv_wf_cpu/test_intersect.py -g {input[0]} -d {input[1]} -r $ref -c {CHROM_LENGTH}
     cat {OUT_DIR}/{params.prefix}/{params.prefix}_combined_out.vcf |  awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf
     zcat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.dv.vcf.gz  | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
     grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep  'AC=1' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
