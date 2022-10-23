@@ -12,7 +12,8 @@
   "dv_out":"/dv",
   "out_dir": "/dnv_wf_cpu/out_hare",
   "suffix_dv": ".deepvariant.gvcf.gz",
-  "suffix_hc": ".gatk.gvcf.gz"
+  "suffix_hc": ".gatk.gvcf.gz",
+  "chrom_length": 
 }
 
 
