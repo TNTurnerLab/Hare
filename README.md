@@ -5,16 +5,17 @@
 #### Tychele N. Turner, Ph.D., Lab
 
 
-A de novo variant caller leveraging Parabricks GPU accelerated variant calling.  This is an updated version of the [workflow described in Ng et al. 2022.](https://doi.org/10.1002/humu.24455).  The original code of the workflow can be [found here.](https://github.com/TNTurnerLab/GPU_accelerated_de_novo_workflow)  This version has been tested with the output from Parabricks v.3.0.0 as well as the now free version of [Parabricks v4.0.0.0-1](https://docs.nvidia.com/clara/parabricks/4.0.0/index.html).
+Hare is a *de novo* variant caller leveraging the power of Parabricks GPU accelerated variant calling.  This is an updated version of the [workflow described in Ng et al. 2022.](https://doi.org/10.1002/humu.24455)  The original code of the workflow can be [found here.](https://github.com/TNTurnerLab/GPU_accelerated_de_novo_workflow)  This version has been tested with the output from Parabricks v.3.0.0, as well as, the now free version of [Parabricks v4.0.0.0-1](https://docs.nvidia.com/clara/parabricks/4.0.0/index.html).  You can find dependancies and instructions on how to run Parabricks [here.](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html)
 
 # How to Run
 ## Input
 
-Two main inputs:
-1) The two input for this workflow are the output g.vcf files from Parabricks accelerated from GATK and DeepVariant. 
+Three main inputs:
+1)  Output g.vcf files from GATK and DeepVariant. 
 2)  A comma delimited text file, with one trio per line, with sample IDs formatted in the following way:  Father,Mother,Child
+3)  The reference genome .fasta used when running GATK and DeepVariant
 
-If you would like to download the RepeatMasker files, please use the following links:
+This workflow also makes use of specific RepeatMasker files, links to which can be found below.
  
 #### Centromeres
 ```
@@ -52,23 +53,28 @@ Before running, please make any necessary changes to these options below in the 
 
 ## Running
  
-While the use of docker is highly recommended, but the workflow is able to run outside of a docker envionment, please see the software dependancies below.  If you like to run Parabricks 4.0.0 having a system able to run Docker **is** a requirement.
+While the use of Docker is highly recommended, the workflow is able to run outside of a docker envionment, please see the software dependancies below.  If you would like to run Parabricks 4.0.0, having a system able to run Docker **is** a requirement.
 
 The workflow Docker image can be pulled from here:
 ```
 tnturnerlab/hare:v1.1
 ```
-We also provide the Dockerfile if you would like to make modifications.  
+ 
+
+Below is an example Docker run command:
 
 ```
 docker run -v "/path/to/hare/code:/dnv_wf_cpu" -v "/path/to/reference:/reference" -v "/path/to/deepvariant/output:/dv" -v "/path/to/gatk/output:/gatk"  -v "/path/to/RepeatMasker/region/files:/region" tnturnerlab/hare:v1.1 /opt/conda/envs/snake/bin/snakemake -s /dnv_wf_cpu/hare_1.1.smk -j 6 --cores -k --rerun-incomplete -w 120 
 ```
+
+We also provide the Dockerfile if you would like to make modifications. 
+
  # Output
  Below is a brief descirption of the main output folders from Hare:
- * dv_vcf:  Output folder for converted GLnexus .bcf files to .vcf.gz files for DeepVariant output.  Also includes tabix index file.
- * hc_vcf:  Output folder for converted GLnexus .bcf files to .vcf.gz files for GATK HaplotypeCaller output.  Also includes tabix index file.
  * dv_bcf: Output folder for GLnexus .bcf files for DeepVariant output.
  * hc_bcf: Output folder for GLnexus .bcf files for GATK HaplotypeCaller output.
+ * dv_vcf: Output folder for converted GLnexus .bcf files to .vcf.gz files for DeepVariant output.  Also includes tabix index file.
+ * hc_vcf: Output folder for converted GLnexus .bcf files to .vcf.gz files for GATK HaplotypeCaller output.  Also includes tabix index file.
  * out_hare:  Output folder where the *de novo* variant files can be found.  If you are running multiple trios, each trio will have an individual folder, identified by the child ID.
  
 The main output files are:
@@ -81,7 +87,7 @@ The main output files are:
 
   * This file holds the *de novo* variants specifically within CpG regions.
   
-This current version has able to find almost all of the same de novo variants found from the original pipeline.  The NA12878 trio from the 1000 Genomes Collection 30x WGS data is used as an example:
+This current version has able to find almost all of the same de novo variants found from the original pipeline.  The NA12878 trio from the 1000 Genomes Project 30x WGS data is used as an example:
 
 ![NA12878](https://github.com/TNTurnerLab/Hare/blob/main/docs/compare_old_pipeline_to_1.1.png)
  
