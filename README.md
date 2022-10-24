@@ -45,10 +45,11 @@ wget -q https://de.cyverse.org/dl/d/713F020E-246B-4C47-BBC3-D4BB86BFB6E9/CpG_sit
 Before running, please make any necessary changes to these options below in the config.json. 
  
 * regions:  "/region" *If you don't have the RepeatMasker files, please make this entry blank*
-* gq_value:  20 *gq value filter*
-* depth_value: 10 *Depth value filter*
+* gq_value:  20 *Default gq value filter*
+* depth_value: 10 *Default depth value filter*
 * suffix_dv:  *Suffix of the DeepVariant data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
 * suffix_hc:  *Suffix of the GATK Haplotypecaller data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
+* family_file: "/dnv_wf_cpu/<your_family_file>"
 * chrom_length:  *Optional chromosome length file, use if you are not using human reference GRCh38.  Can leave blank if using GRCh38.  Please make this a two column, tab delimited file, with the first chromosome and the second column the length of the chromosome*
 
 ## Running
