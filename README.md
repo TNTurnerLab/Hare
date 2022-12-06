@@ -11,7 +11,7 @@ Hare is a *de novo* variant caller leveraging the power of Parabricks GPU accele
 ## Input
 
 Three main inputs:
-1)  Output g.vcf files from GATK and DeepVariant. 
+1)  .bam or .cram files for the trio(s)
 2)  A comma delimited text file, with one trio per line, with sample IDs formatted in the following way:  Father,Mother,Child
 3)  The reference genome .fasta used when running GATK and DeepVariant
 
