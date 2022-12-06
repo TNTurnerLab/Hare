@@ -15,7 +15,12 @@ Three main inputs:
 2)  A comma delimited text file, with one trio per line, with sample IDs formatted in the following way:  Father,Mother,Child
 3)  The reference genome .fasta used when running GATK and DeepVariant
 
+You'll first need to run the your crams through Parabricks GATK Haplotypecaller and DeepVariant, the instructions of which can be found above.  When doing so, please ensure you are using the ```--gvcf``` flag.You'll use that output for the Snakemake file found in this repo.  
+
+**NOTE** This pipeline has been specifically tested using output from Parabricks GATK Haplotypecaller and DeepVariant.  Other g.vcf output may not work properly
+
 This workflow also makes use of specific RepeatMasker files, links to which can be found below.
+ 
  
 #### Centromeres
 ```
