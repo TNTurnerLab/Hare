@@ -46,16 +46,7 @@ wget -q https://de.cyverse.org/dl/d/786D1640-3A26-4A1C-B96F-425065FBC6B7/CpG_sit
 wget -q https://de.cyverse.org/dl/d/713F020E-246B-4C47-BBC3-D4BB86BFB6E9/CpG_sites_sorted_b38.bed.gz.tbi
 ```
 
-#### Setting up the config.json file
-Before running, please make any necessary changes to these options below in the config.json. 
- 
-* regions:  "/region" *If you don't have the RepeatMasker files, please make this entry blank*
-* gq_value:  20 *Default gq value filter*
-* depth_value: 10 *Default depth value filter*
-* suffix_dv:  *Suffix of the DeepVariant data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
-* suffix_hc:  *Suffix of the GATK Haplotypecaller data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
-* family_file: "/dnv_wf_cpu/<your_family_file>"
-* chrom_length:  *Optional chromosome length file, use if you are not using human reference GRCh38.  Can leave blank if using GRCh38.  Please make this a two column, tab delimited file, with the first chromosome and the second column the length of the chromosome*
+
 
 ## Running
  
@@ -66,11 +57,75 @@ The workflow Docker image can be pulled from here:
 tnturnerlab/hare:v1.1
 ```
  
+### Snakemake
 
+#### Setting up the config.json file
+Before running, please make any necessary changes to these options below in the config.json. 
+ ```
+* regions:  "/region" *If you don't have the RepeatMasker files, please make this entry blank*
+* gq_value:  20 *Default gq value filter*
+* depth_value: 10 *Default depth value filter*
+* suffix_dv:  *Suffix of the DeepVariant data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
+* suffix_hc:  *Suffix of the GATK Haplotypecaller data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
+* family_file: "/dnv_wf_cpu/<your_family_file>"
+* chrom_length:  *Optional chromosome length file, use if you are not using human reference GRCh38.  Can leave blank if using GRCh38.  Please make this a two column, tab delimited file, with the first chromosome and the second column the length of the chromosome*
+```
 Below is an example Docker run command:
 
 ```
 docker run -v "/path/to/hare/code:/dnv_wf_cpu" -v "/path/to/reference:/reference" -v "/path/to/deepvariant/output:/dv" -v "/path/to/gatk/output:/gatk"  -v "/path/to/RepeatMasker/region/files:/region" tnturnerlab/hare:v1.1 /opt/conda/envs/snake/bin/snakemake -s /dnv_wf_cpu/hare_1.1.smk -j 6 --cores -k --rerun-incomplete -w 120 
+```
+
+
+### Cromwell 
+
+We also provide this workflow in a .wdl format.  Unlike the Snakemake, you will be able to run Parabricks directly from this workflow, instead of separately.  You can also run this workflow in the cloud.  To run this, you'll need to download the [Cromwell .jar found here](https://github.com/broadinstitute/cromwell/releases).  This wdl was specificlly tested on cromwell-83.  
+
+The basic config file looks like this:
+```
+{
+  "jumping_hare.num_ram_hc": "Int (optional, default = 120)",
+  "jumping_hare.extra_mem_hc": "Int (optional, default = 65)",
+  "jumping_hare.maxPreemptAttempts": "Int (optional, default = 3)",
+  "jumping_hare.cpu_hc": "Int (optional, default = 24)",
+  "jumping_hare.glnexus_deep_model": "String (optional, default = \"DeepVariant\")",
+  "jumping_hare.test_intersect": "File", #pathway to the test_intersect.py file
+  "jumping_hare.deep_model": "String (optional, default = \"shortread\")",
+  "jumping_hare.gpuDriverVersion_DV": "String (optional, default = \"460.73.01\")",
+  "jumping_hare.sample_suffix": "String", #suffix of the input cram file.  If your sample was NA12878.final.cram, you would put ".final.cram" here
+  "jumping_hare.typeOfGPU_HC": "String (optional, default = \"nvidia-tesla-t4\")",
+  "jumping_hare.gq": "Int (optional, default = 20)",
+  "jumping_hare.glnexus_ram_dv": "Int (optional, default = 100)",
+  "jumping_hare.filter_glnexuscombined_updated": "File",  #pathway to filter_glnexuscombined_updated.py
+  "jumping_hare.num_gpu_HC": "Int (optional, default = 2)",
+  "jumping_hare.num_ram_dv": "Int (optional, default = 120)",
+  "jumping_hare.naive_inheritance_trio_py2": "File", #pathway to naive_inheritance_trio_py2.py
+  "jumping_hare.num_gpu_dv": "Int (optional, default = 4)",
+  "jumping_hare.glnexus_DV.extramem_GLDV": "Int? (optional)",
+  "jumping_hare.extra_mem_dv": "Int (optional, default = 65)",
+  "jumping_hare.typeOfGPU_DV": "String (optional, default = \"nvidia-tesla-t4\")",
+  "jumping_hare.combinedAndFilter.extramem_GLDV": "Int? (optional)",
+  "jumping_hare.glnexus_ram_hc": "Int (optional, default = 100)",
+  "jumping_hare.deep_docker": "String (optional, default = \"nvcr.io/nvidia/clara/clara-parabricks:4.0.0-1\")",
+  "jumping_hare.pathToReference": "File",  #pathway to tarball of reference information
+  "jumping_hare.wes": "Boolean (optional, default = false)", #Please set this to true if you are analyzing WES data
+  "jumping_hare.glnexus_cpu": "Int (optional, default = 32)",
+  "jumping_hare.gpuDriverVersion_HC": "String (optional, default = \"460.73.01\")",
+  "jumping_hare.cram_files": "Array[Array[WomCompositeType {\n cram -> File\ncrai -> File \n}]]", #cram/bam file input, please see example for formating
+  "jumping_hare.cpu_dv": "Int (optional, default = 24)",
+  "jumping_hare.glnexus_HC.extramem_GLDV": "Int? (optional)",
+  "jumping_hare.interval_file": "String (optional, default = \"None\")",
+  "jumping_hare.depth": "Int (optional, default = 10)",
+  "jumping_hare.reference": "String", #name of reference fasta
+  "jumping_hare.regions": "File? (optional)",
+  "jumping_hare.hare_docker": "String (optional, default = \"tnturnerlab/hare:v1.1\")",
+  "jumping_hare.trios": "Array[WomCompositeType {\n father -> String\nmother -> String\nchild -> String \n}]", #trios, MUST be in same order as trios in cram_file
+  "jumping_hare.chrom_length": "File? (optional)" #Optional chromosome length file if you are not using Human build GRCh38
+}
+```
+Required arguments are highlighted in comments above.  We have provided an example config to help with formatting. Please modify the computational requirements to fit your HPC.  If you are running it on Google CLoud Platform, you may keep the computation settings. Requirements are based on [NVIDIA's own workflows found here.](https://github.com/clara-parabricks-workflows/parabricks-wdl)  If you are going to use this wdl, please tarball your reference files.  If you are running WES data, please include your capture region in this tarball.
+```
+tar -jcf reference.tar.bz2 reference.fa reference.fa.fai reference.dict
 ```
 
 We also provide the Dockerfile if you would like to make modifications. 
