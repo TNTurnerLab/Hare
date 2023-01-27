@@ -5,6 +5,7 @@ RUN conda install -c bioconda bcftools=1.11 \
     && conda install -c bioconda bedtools=2.29.2 \
     && conda install -c bioconda samtools=1.11 
 RUN conda create -n snake -c bioconda -c conda-forge snakemake=7.15.2-0
+RUN conda create -n wes_filter -c bioconda -c conda-forge python=3.7.1 libgcc-ng=10.3.0 pybedtools=0.9.0
 RUN conda create -n py2 python=2.7
 WORKDIR /
 RUN wget https://github.com/dnanexus-rnd/GLnexus/releases/download/v1.4.1/glnexus_cli && chmod +x glnexus_cli
