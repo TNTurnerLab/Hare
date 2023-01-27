@@ -1,7 +1,7 @@
 import os
 import sys
 
-configfile: "/dnv_wf_cpu/config_hare.json"
+configfile: "/dnv_wf_cpu/config.json"
 
 REFERENCE = config["reference"]
 FAMILY_FILE=config["family_file"]
