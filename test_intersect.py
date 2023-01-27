@@ -10,7 +10,7 @@ def read_file(file):
             record=tb.query(str(x),1,y)  
             vcf.append(list(record))
         except tabix.TabixError:
-            print('Could not find anything on '+x)
+            print('Could not find anything on '+str(x))
             continue
     return vcf
 def findVariant(variants):
