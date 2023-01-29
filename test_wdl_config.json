@@ -1,0 +1,41 @@
+{
+  "jumping_hare.pathToReference": "/path/to/reference/grch38_ref.tar.bz2",
+  "jumping_hare.reference": "GRCh38_full_analysis_set_plus_decoy_hla.fa",  
+  "jumping_hare.sample_suffix": "_supersmall.bam",
+  "jumping_hare.typeOfGPU_HC":"NVIDIAA100_PCIE_40GB",
+  "jumping_hare.cpu_dv": 32,
+  "jumping_hare.num_ram_dv": 100,
+  "jumping_hare.num_ram_hc": 100,
+  "jumping_hare.typeOfGPU_DV":"NVIDIAA100_PCIE_40GB",
+  "jumping_hare.num_gpu_HC": 2,
+  "jumping_hare.num_gpu_dv": 2,
+  "jumping_hare.glnexus_ram_hc": 250,
+  "jumping_hare.glnexus_ram_dv": 250,
+  "jumping_hare.cram_files":  [
+  [
+    {
+      "cram": "/path/to/NA12891_supersmall.bam",
+      "crai": "/path/to/NA12891_supersmall.bam.bai"
+    },
+    {
+      "cram": "/path/to/NA12892_supersmall.bam",
+      "crai": "/path/to/NA12892_supersmall.bam.bai"
+    },
+    {
+      "cram": "/path/to/NA12878_supersmall.bam",
+      "crai": "/path/to/NA12878_supersmall.bam.bai"
+    }
+  ]
+  ],
+  "jumping_hare.naive_inheritance_trio_py2":"/path/to/naive_inheritance_trio_py2.py",
+  "jumping_hare.test_intersect":"/path/to/test_intersect.py",
+  "jumping_hare.filter_glnexuscombined_updated":"/path/to/filter_glnexuscombined_updated.py",
+  "jumping_hare.trios":[
+  {
+    "father" :"NA12891",
+    "mother": "NA12892",
+    "child": "NA12878"
+  }
+  ],
+  "jumping_hare.regions": "/path/to/regions.tar.bz2"
+}
