@@ -4,7 +4,7 @@ import os
 
 #Modifies the interval file by shrinking the positions by user input, default to 40bp.
 def modifyIntervalFile(file,change):
-    with open('changed_'+file+'_pm'+str(change)+'.bed','w') as out:
+    with open(file+'_pm'+str(change)+'_changed.bed','w') as out:
         with open(file) as input:
             for line in input:
                 data=line.strip().split('\t')
@@ -51,8 +51,8 @@ def writeFullOutput(file):
 #Calls pyBedtools to do the intersection and subtraction calls
 def findIntersect(file,change,outpath):
     a = BedTool('combined_dnv.bed')
-    a.intersect('changed_'+file+'_pm'+str(change)+'.bed').saveas(outpath+'high_confidence_dnvs.bed')
-    a.subtract('changed_'+file+'_pm'+str(change)+'.bed').saveas(outpath+'low_confidence_dnvs.bed')
+    a.intersect(file+'_pm'+str(change)+'_changed.bed').saveas(outpath+'high_confidence_dnvs.bed')
+    a.subtract(file+'_pm'+str(change)+'_changed.bed').saveas(outpath+'low_confidence_dnvs.bed')
     writeFullOutput(outpath+'high_confidence_dnvs.bed')
     writeFullOutput(outpath+'low_confidence_dnvs.bed')
 parser = ArgumentParser(description='Grab info for filter')
