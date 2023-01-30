@@ -54,7 +54,7 @@ While the use of Docker is highly recommended, the workflow is able to run outsi
 
 The workflow Docker image can be pulled from here:
 ```
-tnturnerlab/hare:v1.1
+tnturnerlab/hare:v1.2
 ```
  
 ### Snakemake
@@ -68,6 +68,7 @@ Before running, please make any necessary changes to these options below in the 
 * suffix_dv:  *Suffix of the DeepVariant data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
 * suffix_hc:  *Suffix of the GATK Haplotypecaller data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
 * family_file: "/dnv_wf_cpu/<your_family_file>"
+* glnexus_dv_model: Please change this to DeepVariantWES if you are running WES, otherwise leave it blank. 
 * chrom_length:  *Optional chromosome length file, use if you are not using human reference GRCh38.  Can leave blank if using GRCh38.  Please make this a two column, tab delimited file, with the first chromosome and the second column the length of the chromosome*
 ```
 Below is an example Docker run command:
@@ -127,6 +128,14 @@ Required arguments are highlighted in comments above.  We have provided an examp
 ```
 tar -jcf reference.tar.bz2 reference.fa reference.fa.fai reference.dict
 ```
+You will also need to put the RepeatMaster files into a separte tarball.  
+
+Please find the [Cromwell documentation](https://cromwell.readthedocs.io/en/stable/) for a submission command that fits your specific HPC, but generally  it would be run like this:
+
+```
+java -jar cromwell-83.jar run tortoise_1.2.wdl --inputs test_wdl_config.json
+```
+
 
 We also provide the Dockerfile if you would like to make modifications. 
 
@@ -148,9 +157,17 @@ The main output files are:
 
   * This file holds the *de novo* variants specifically within CpG regions.
   
+If you wanted to use the WES filter script, you can do the follow:
+```
+docker run -v "/path/to/script:/script" -v "/path/to/data:/data" -v "/path/to/interval_file:/interval_file_path tnturnerlab/hare:v1.2 /opt/conda/envs/wes_filter/bin/python /script/wes_result_filter.py -p /data -i /interval_file_path/interval_file.bed -o /script/test_out
+```
+
+This script will separate your WES DNVs into high and low confidence files.  One as a bed file and another as a tab-delimited .txt file.  
+
 This current version has able to find almost all of the same de novo variants found from the original pipeline.  The NA12878 trio from the 1000 Genomes Project 30x WGS data is used as an example:
 
 ![NA12878](https://github.com/TNTurnerLab/Hare/blob/main/docs/compare_old_pipeline_to_1.1.png)
+
  
  ### Software Used:
 * bcftools v1.11 
@@ -163,4 +180,5 @@ This current version has able to find almost all of the same de novo variants fo
 * python v2.7
 * GLnexus v1.4.1
 * pytabix v0.1
+* pybedtools v0.9.0
 
