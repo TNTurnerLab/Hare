@@ -14,8 +14,7 @@
   "suffix_dv": ".deepvariant.gvcf.gz",
   "suffix_hc": ".gatk.gvcf.gz",
   "chrom_length": ,
-  "glnexus_dv_model": ,
-  "suffix": ".cram",
+  "glnexus_dv_model": 
 }
 
 
