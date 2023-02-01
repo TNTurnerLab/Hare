@@ -15,9 +15,11 @@ Three main inputs:
 2)  A comma delimited text file, with one trio per line, with sample IDs formatted in the following way:  Father,Mother,Child
 3)  The reference genome .fasta used when running GATK and DeepVariant
 
+
+
 You'll first need to run the your crams through Parabricks GATK Haplotypecaller and DeepVariant, the instructions of which can be found above.  When doing so, please ensure you are using the ```--gvcf``` flag.You'll use that output for the Snakemake file found in this repo.  
 
-**NOTE** This pipeline has been specifically tested using output from Parabricks GATK Haplotypecaller and DeepVariant.  Other g.vcf output may not work properly
+**NOTE** This pipeline has been specifically tested using output from Parabricks GATK Haplotypecaller and DeepVariant.  Other g.vcf output may not work properly.  Please only use WGS and WES data with this pipeline.  If you have PacBio long-read data, please use [Tortoise.](https://github.com/TNTurnerLab/Tortoise)  
 
 This workflow also makes use of specific RepeatMasker files, links to which can be found below.
  
@@ -89,7 +91,7 @@ The basic config file looks like this:
   "jumping_hare.extra_mem_hc": "Int (optional, default = 65)",
   "jumping_hare.maxPreemptAttempts": "Int (optional, default = 3)",
   "jumping_hare.cpu_hc": "Int (optional, default = 24)",
-  "jumping_hare.glnexus_deep_model": "String (optional, default = \"DeepVariant\")",
+  "jumping_hare.glnexus_deep_model": "String (optional, default = \"DeepVariant\")",  #Please change this to DeepVariantWES for WES data
   "jumping_hare.test_intersect": "File", #pathway to the test_intersect.py file
   "jumping_hare.deep_model": "String (optional, default = \"shortread\")",
   "jumping_hare.gpuDriverVersion_DV": "String (optional, default = \"460.73.01\")",
@@ -115,16 +117,16 @@ The basic config file looks like this:
   "jumping_hare.cram_files": "Array[Array[WomCompositeType {\n cram -> File\ncrai -> File \n}]]", #cram/bam file input, please see example for formating
   "jumping_hare.cpu_dv": "Int (optional, default = 24)",
   "jumping_hare.glnexus_HC.extramem_GLDV": "Int? (optional)",
-  "jumping_hare.interval_file": "String (optional, default = \"None\")",
+  "jumping_hare.interval_file": "String (optional, default = \"None\")", #This is the name of your exome capture region file
   "jumping_hare.depth": "Int (optional, default = 10)",
   "jumping_hare.reference": "String", #name of reference fasta
-  "jumping_hare.regions": "File? (optional)",
+  "jumping_hare.regions": "File? (optional)",  #This is the tarball of your RepeatMaster files
   "jumping_hare.hare_docker": "String (optional, default = \"tnturnerlab/hare:v1.1\")",
   "jumping_hare.trios": "Array[WomCompositeType {\n father -> String\nmother -> String\nchild -> String \n}]", #trios, MUST be in same order as trios in cram_file
   "jumping_hare.chrom_length": "File? (optional)" #Optional chromosome length file if you are not using Human build GRCh38
 }
 ```
-Required arguments are highlighted in comments above.  We have provided an example config to help with formatting. Please modify the computational requirements to fit your HPC.  If you are running it on Google CLoud Platform, you may keep the computation settings. Requirements are based on [NVIDIA's own workflows found here.](https://github.com/clara-parabricks-workflows/parabricks-wdl)  If you are going to use this wdl, please tarball your reference files.  If you are running WES data, please include your capture region in this tarball.
+Required arguments are highlighted in comments above.  We have provided an example config to help with formatting. Please modify the computational requirements to fit your HPC.  If you are running it on Google CLoud Platform, you may keep the computation settings. Requirements are based on [NVIDIA's own workflows found here.](https://github.com/clara-parabricks-workflows/parabricks-wdl)  If you are going to use this wdl, please tarball your reference files.  If you are running WES data, please include your capture region in this tarball.  Please fill in the name of your exome region
 ```
 tar -jcf reference.tar.bz2 reference.fa reference.fa.fai reference.dict
 ```
