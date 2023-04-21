@@ -218,7 +218,7 @@ rule combinedAndFilter:
     /opt/conda/bin/python /dnv_wf_cpu/test_intersect.py -g {input[0]} -d {input[1]} -r $ref -c {CHROM_LENGTH}
     cat {OUT_DIR}/{params.prefix}/{params.prefix}_combined_out.vcf |  awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf
     zcat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.dv.vcf.gz  | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
-    grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep  'AC=1' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
+    grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep  'AC=1;' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
 
 
     #Finds the order of the family position found within the combined .vcf file and what the order is in the family file (which should be in order of father, mother, child)
