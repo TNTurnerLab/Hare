@@ -5,7 +5,7 @@
 #### Tychele N. Turner, Ph.D., Lab
 
 
-Hare is a *de novo* variant caller leveraging the power of Parabricks GPU accelerated variant calling.  This is an updated version of the [workflow described in Ng et al. 2022.](https://doi.org/10.1002/humu.24455)  The original code of the workflow can be [found here.](https://github.com/TNTurnerLab/GPU_accelerated_de_novo_workflow)  This version has been tested with the output from Parabricks v.3.0.0, as well as, the now free version of [Parabricks v4.0.0.0-1](https://docs.nvidia.com/clara/parabricks/4.0.0/index.html).  You can find dependancies and instructions on how to run Parabricks [here.](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html)
+Hare is a *de novo* variant caller leveraging the power of Parabricks GPU accelerated variant calling.  This is an updated version of the [workflow described in Ng et al. 2022.](https://doi.org/10.1002/humu.24455)  The original code of the workflow can be [found here.](https://github.com/TNTurnerLab/GPU_accelerated_de_novo_workflow)  This version has been tested with the output from Parabricks v.3.0.0, as well as the free version of [Parabricks v4.0.0.0-1](https://docs.nvidia.com/clara/parabricks/4.0.0/index.html).  You can find dependencies and instructions on how to run Parabricks [here.](https://docs.nvidia.com/clara/parabricks/4.0.0/GettingStarted.html)
 
 # How to Run
 ## Input
@@ -17,7 +17,7 @@ Three main inputs:
 
 
 
-You'll first need to run the your crams through Parabricks GATK Haplotypecaller and DeepVariant, the instructions of which can be found above.  When doing so, please ensure you are using the ```--gvcf``` flag.You'll use that output for the Snakemake file found in this repo.  
+You'll first need to run your crams through Parabricks GATK Haplotypecaller and DeepVariant, the instructions of which can be found above.  When doing so, please ensure you are using the ```--gvcf``` flag. You'll use that output for the Snakemake file found in this repo.  
 
 **NOTE** This pipeline has been specifically tested using output from Parabricks GATK Haplotypecaller and DeepVariant.  Other g.vcf output may not work properly.  Please only use WGS and WES data with this pipeline.  If you have PacBio long-read data, please use [Tortoise.](https://github.com/TNTurnerLab/Tortoise)  
 
@@ -52,7 +52,7 @@ wget -q https://de.cyverse.org/dl/d/713F020E-246B-4C47-BBC3-D4BB86BFB6E9/CpG_sit
 
 ## Running
  
-While the use of Docker is highly recommended, the workflow is able to run outside of a docker envionment, please see the software dependancies below.  If you would like to run Parabricks 4.0.0, having a system able to run Docker **is** a requirement.
+While the use of Docker is highly recommended, the workflow is able to run outside of a Docker environment, please see the software dependencies below.  If you would like to run Parabricks 4.0.0, having a system able to run Docker **is** a requirement.
 
 The workflow Docker image can be pulled from here:
 ```
@@ -62,7 +62,7 @@ tnturnerlab/hare:v1.2
 ### Snakemake
 
 #### Setting up the config.json file
-Before running, please make any necessary changes to these options below in the config.json. 
+Before running, please make any necessary changes to the options below in the config.json. 
  ```
 * regions:  "/region" *If you don't have the RepeatMasker files, please make this entry blank*
 * gq_value:  20 *Default gq value filter*
@@ -71,18 +71,18 @@ Before running, please make any necessary changes to these options below in the 
 * suffix_hc:  *Suffix of the GATK Haplotypecaller data files.  Assumes input files are \<sample\_name\>\<suffix\>* 
 * family_file: "/dnv_wf_cpu/<your_family_file>"
 * glnexus_dv_model: Please change this to DeepVariantWES if you are running WES, otherwise leave it blank. 
-* chrom_length:  *Optional chromosome length file, use if you are not using human reference GRCh38.  Can leave blank if using GRCh38.  Please make this a two column, tab delimited file, with the first chromosome and the second column the length of the chromosome*
+* chrom_length:  *Optional chromosome length file, use if you are not using human reference GRCh38.  You can leave it blank if using GRCh38.  Please make this a two-column, tab-delimited file, with the first chromosome and the second column the length of the chromosome*
 ```
 Below is an example Docker run command:
 
 ```
-docker run -v "/path/to/hare/code:/dnv_wf_cpu" -v "/path/to/reference:/reference" -v "/path/to/deepvariant/output:/dv" -v "/path/to/gatk/output:/gatk"  -v "/path/to/RepeatMasker/region/files:/region" tnturnerlab/hare:v1.1 /opt/conda/envs/snake/bin/snakemake -s /dnv_wf_cpu/hare_1.1.smk -j 6 --cores -k --rerun-incomplete -w 120 
+docker run -v "/path/to/hare/code:/dnv_wf_cpu" -v "/path/to/reference:/reference" -v "/path/to/deepvariant/output:/dv" -v "/path/to/gatk/output:/gatk"  -v "/path/to/RepeatMasker/region/files:/region" tnturnerlab/hare:v1.2 /opt/conda/envs/snake/bin/snakemake -s /dnv_wf_cpu/hare_1.2.smk -j 6 --cores -k --rerun-incomplete -w 120 
 ```
 
 
 ### Cromwell 
 
-We also provide this workflow in a .wdl format.  Unlike the Snakemake, you will be able to run Parabricks directly from this workflow, instead of separately.  You can also run this workflow in the cloud.  To run this, you'll need to download the [Cromwell .jar found here](https://github.com/broadinstitute/cromwell/releases).  This wdl was specificlly tested on cromwell-83.  
+We also provide this workflow in a .wdl format.  Unlike the Snakemake, you will be able to run Parabricks directly from this workflow, instead of separately.  You can also run this workflow in the cloud.  To run this, you'll need to download the [Cromwell .jar found here](https://github.com/broadinstitute/cromwell/releases).  This wdl was specifically tested on cromwell-83.  
 
 The basic config file looks like this:
 ```
@@ -114,7 +114,7 @@ The basic config file looks like this:
   "jumping_hare.wes": "Boolean (optional, default = false)", #Please set this to true if you are analyzing WES data
   "jumping_hare.glnexus_cpu": "Int (optional, default = 32)",
   "jumping_hare.gpuDriverVersion_HC": "String (optional, default = \"460.73.01\")",
-  "jumping_hare.cram_files": "Array[Array[WomCompositeType {\n cram -> File\ncrai -> File \n}]]", #cram/bam file input, please see example for formating
+  "jumping_hare.cram_files": "Array[Array[WomCompositeType {\n cram -> File\ncrai -> File \n}]]", #cram/bam file input, please see the example for formatting
   "jumping_hare.cpu_dv": "Int (optional, default = 24)",
   "jumping_hare.glnexus_HC.extramem_GLDV": "Int? (optional)",
   "jumping_hare.interval_file": "String (optional, default = \"None\")", #This is the name of your exome capture region file
@@ -126,11 +126,11 @@ The basic config file looks like this:
   "jumping_hare.chrom_length": "File? (optional)" #Optional chromosome length file if you are not using Human build GRCh38
 }
 ```
-Required arguments are highlighted in comments above.  We have provided an example config to help with formatting. Please modify the computational requirements to fit your HPC.  If you are running it on Google CLoud Platform, you may keep the computation settings. Requirements are based on [NVIDIA's own workflows found here.](https://github.com/clara-parabricks-workflows/parabricks-wdl)  If you are going to use this wdl, please tarball your reference files.  If you are running WES data, please include your capture region in this tarball.  Please fill in the name of your exome region
+Required arguments are highlighted in the comments above.  We have provided an example config to help with formatting. Please modify the computational requirements to fit your HPC.  If you are running it on Google Cloud Platform, you may keep the computation settings. Requirements are based on [NVIDIA's own workflows found here.](https://github.com/clara-parabricks-workflows/parabricks-wdl)  If you are going to use this wdl, please tarball your reference files.  If you are running WES data, please include your capture region in this tarball.  Please fill in the name of your exome region
 ```
 tar -jcf reference.tar.bz2 reference.fa reference.fa.fai reference.dict
 ```
-You will also need to put the RepeatMaster files into a separte tarball.  
+You will also need to put the RepeatMaster files into a separate tarball.  
 
 Please find the [Cromwell documentation](https://cromwell.readthedocs.io/en/stable/) for a submission command that fits your specific HPC, but generally  it would be run like this:
 
@@ -142,7 +142,7 @@ java -jar cromwell-83.jar run tortoise_1.2.wdl --inputs test_wdl_config.json
 We also provide the Dockerfile if you would like to make modifications. 
 
  # Output
- Below is a brief descirption of the main output folders from Hare:
+ Below is a brief description of the main output folders from Hare:
  * dv_bcf: Output folder for GLnexus .bcf files for DeepVariant output.
  * hc_bcf: Output folder for GLnexus .bcf files for GATK HaplotypeCaller output.
  * dv_vcf: Output folder for converted GLnexus .bcf files to .vcf.gz files for DeepVariant output.  Also includes tabix index file.
