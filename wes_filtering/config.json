@@ -1,0 +1,15 @@
+{
+  "reference": "/path/to/reference",
+  "famfile": "/path/to/familyfile",
+  "data_dir": "/path/to/dnv/files",
+  "out_dir": "out_dir_name",
+  "cramloc": "/file/of/cram/locations",
+  "lower": 0,
+  "upper": 0,
+  "case_specific": "False",
+  "interval": "/path/to/capture_region/file",
+  "change": 40
+}
+
+
+
