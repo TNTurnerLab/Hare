@@ -12,7 +12,7 @@ Hare is a *de novo* variant caller leveraging the power of Parabricks GPU accele
 
 Three main inputs:
 1)  .bam or .cram files for the trio(s)
-2)  A comma delimited text file, with one trio per line, with sample IDs formatted in the following way:  Father,Mother,Child
+2)  A comma-delimited text file, with one trio per line, with sample IDs formatted in the following way:  Father,Mother,Child
 3)  The reference genome .fasta used when running GATK and DeepVariant
 
 
@@ -159,10 +159,11 @@ The main output files are:
 
   * This file holds the *de novo* variants specifically within CpG regions.
   
-If you wanted to use the WES filter script, you can do the follow:
+If you want to use the WES filter, please modify the config.json file in the ```wes_filtering``` folder.  You can run the Snakemake with a docker command like this:
 ```
-docker run -v "/path/to/script:/script" -v "/path/to/data:/data" -v "/path/to/interval_file:/interval_file_path tnturnerlab/hare:v1.2 /opt/conda/envs/wes_filter/bin/python /script/wes_result_filter.py -p /data -i /interval_file_path/interval_file.bed -o /script/test_out
+docker run -v "/path/to/script:/wes_filter" -v "/path/to/data:/data"  tnturnerlab/tortoise:v1.2 /opt/conda/envs/snake/bin/snakemake -s wes_filter.smk --cores -s /wes_filter/wes_filter.smk --cores 
 ```
+
 
 This script will separate your WES DNVs into high and low confidence files.  One as a bed file and another as a tab-delimited .txt file.  
 
