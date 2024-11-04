@@ -1,7 +1,7 @@
 version: 1.2
 workflows:
    - name: Hare
-     subclass: CWL
+     subclass: WDL
      primaryDescriptorPath: /hare_1.2.wdl
      testParameterFiles:
      topic: Hare DNV workflow 
