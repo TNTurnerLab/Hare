@@ -134,7 +134,11 @@ workflow jumping_hare {
             dv_vcf_out=glnexus_DV.dnv_vcf,
             dv_vcf_out_tbi=glnexus_DV.dnv_vcf_tbi,
             hc_vcf_out=glnexus_HC.dnv_vcf,
-            hc_vcf_out_tbi=glnexus_HC.dnv_vcf_tbi
+            hc_vcf_out_tbi=glnexus_HC.dnv_vcf_tbi,
+            dv_vcf_out_full=glnexus_DV.glenexus_vcf_dv,
+            hc_vcf_out_full=glnexus_HC.glenexus_vcf_hc,
+            dv_vcf_out_full_tbi=glnexus_DV.out_vcf_dv_tbi,
+            hc_vcf_out_full_tbi=glnexus_HC.out_vcf_hc_tbi
 
 
         }
@@ -385,6 +389,10 @@ task glnexus_HC {
 task combinedAndFilter {
     input{
         family fam
+        File dv_vcf_out_full
+        File hc_vcf_out_full
+        File dv_vcf_out_full_tbi
+        File hc_vcf_out_full_tbi
         File dv_vcf_out
         File hc_vcf_out
         File dv_vcf_out_tbi
@@ -410,7 +418,7 @@ task combinedAndFilter {
     
     Int tmpsize=select_first([extramem_GLDV,50])
    
-    Int disk_size = ceil(size(dv_vcf_out,"GB")+size(hc_vcf_out,"GB")+tmpsize)
+    Int disk_size = ceil(size(dv_vcf_out,"GB")+size(hc_vcf_out,"GB")+tmpsize+size(dv_vcf_out_full,"GB")+size(hc_vcf_out_full,"GB"))
     command <<<
     set -euo pipefail
     #Filters out -L chromosomes that are not -L chr1-22, grabbing variants with an allele count of 1, variants that were found from both DV and HC (defined as set=Intersection), and removes variants that are either 10 A's or T's in a row.
@@ -454,6 +462,7 @@ task combinedAndFilter {
         /opt/conda/bin/bedtools intersect -v -a ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}.vcf -b regions/LCR-hs38-5bp-buffer.bed.gz    regions/hg38_centromeres_09252018.bed.gz  regions/recent_repeat_b38-5bp-buffer.bed.gz  >> ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position.vcf
         /opt/conda/bin/bedtools intersect -a ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position.vcf -b regions/CpG_sites_sorted_b38.bed.gz >> ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position_all.vcf
     fi
+    tar -cjf ~{fam.child}.hat.output.tar.bz2 ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position.vcf ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position_all.vcf ~{dv_vcf_out_full} ~{hc_vcf_out_full} ~{dv_vcf_out_full_tbi} ~{hc_vcf_out_full_tbi}
     >>>
     runtime {
         docker : "~{hare_docker}"
@@ -462,10 +471,8 @@ task combinedAndFilter {
         memory : "16GB"
         preemptible : maxPreemptAttempts
     }
-
+    
     output{
-        File dnv_all="~{fam.child}.glnexus.family.combined_intersection_filtered_gq_20_depth_10.vcf"
-        File dnv_vcf_actual="~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position.vcf"
-        File dnv_vcf_cpg="~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position_all.vcf"
+        File dnv_all="~{fam.child}.hat.output.tar.bz2"
     }
 }
