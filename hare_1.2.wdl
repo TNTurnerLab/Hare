@@ -14,8 +14,8 @@ workflow jumping_hare {
     input {
         Array[Array[cram_pairs]] cram_files
         Array[family] trios
-        File pathToReference
-        String reference
+        File pathToReference="gs://hat_open_ref/grch_hat_ref.tar"
+        String reference="GRCh38_full_analysis_set_plus_decoy_hla.fa"
         String basename_split=".cram"
         String deep_docker="nvcr.io/nvidia/clara/clara-parabricks:4.0.0-1"
         String typeOfGPU_DV="nvidia-tesla-t4"
@@ -23,9 +23,9 @@ workflow jumping_hare {
         String typeOfGPU_HC="nvidia-tesla-t4"
         String gpuDriverVersion_HC = "460.73.01"
         String hare_docker="tnturnerlab/hare:v1.1"
-        File naive_inheritance_trio_py2
-        File test_intersect
-        File filter_glnexuscombined_updated
+        File naive_inheritance_trio_py2="gs://hat_open_ref/Hare/naive_inheritance_trio_py2.py"
+        File test_intersect="gs://hat_open_ref/Hare/test_intersect.py"
+        File filter_glnexuscombined_updated="gs://hat_open_ref/Hare/filter_glnexuscombined_updated.py"
         String deep_model='shortread'
         Boolean wes=false
         String glnexus_deep_model='DeepVariant'
@@ -45,7 +45,7 @@ workflow jumping_hare {
         String sample_suffix
         Int maxPreemptAttempts=3
         File? chrom_length
-        File? regions
+        File? regions="gs://hat_open_ref/regions.tar"
         String interval_file="None"
         Int gq=20
         Int depth=10
@@ -71,7 +71,6 @@ workflow jumping_hare {
                     typeOfGPU=typeOfGPU_DV,
                     num_gpu_dv=num_gpu_dv,
                     extra_mem_dv = extra_mem_dv,
-                    maxPreemptAttempts = maxPreemptAttempts,
                     suffix=sample_suffix,
                     interval_file=interval_file,
                     wes=wes
@@ -86,7 +85,6 @@ workflow jumping_hare {
                     nThreads = cpu_hc,
                     gbRAM = num_ram_hc,
                     extra_mem_dv = extra_mem_hc,
-                    maxPreemptAttempts = maxPreemptAttempts,
                     suffix=sample_suffix,
                     gpuDriverVersion=gpuDriverVersion_HC,
                     typeOfGPU=typeOfGPU_HC,
@@ -156,7 +154,6 @@ task deepVariant {
     String deep_model
     String typeOfGPU
     Int? extra_mem_dv 
-    Int maxPreemptAttempts
     String basename_split
     String suffix
     Int num_gpu_dv
@@ -196,7 +193,6 @@ task deepVariant {
         resource: "gpuhost span[hosts=1]"
         nvidiaDriverVersion : "~{gpuDriverVersion}"
         zones : ["us-central1-a", "us-central1-b", "us-central1-c"]
-        preemptible : maxPreemptAttempts
     }
 
     output {
@@ -214,7 +210,6 @@ task gatk {
     String reference
     Int gbRAM 
     Int? extra_mem_dv 
-    Int maxPreemptAttempts
     String basename_split
     String typeOfGPU
     String suffix
@@ -248,7 +243,6 @@ task gatk {
         resource: "gpuhost span[hosts=1]"
         nvidiaDriverVersion : "~{gpuDriverVersion}"
         zones : ["us-central1-a", "us-central1-b", "us-central1-c"]
-        preemptible : maxPreemptAttempts
     }
 
     output {
