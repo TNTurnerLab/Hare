@@ -8,6 +8,7 @@ struct family {
     String father
     String mother
     String child
+    String child_sex
 }
 
 workflow jumping_hare {
@@ -23,6 +24,7 @@ workflow jumping_hare {
         String typeOfGPU_HC="nvidia-tesla-t4"
         String gpuDriverVersion_HC = "460.73.01"
         String hare_docker="tnturnerlab/hare:v1.1"
+
         File naive_inheritance_trio_py2="gs://hat_open_ref/Hare/naive_inheritance_trio_py2.py"
         File test_intersect="gs://hat_open_ref/Hare/test_intersect.py"
         File filter_glnexuscombined_updated="gs://hat_open_ref/Hare/filter_glnexuscombined_updated.py"
@@ -429,8 +431,10 @@ task combinedAndFilter {
     fi
     cat ~{fam.child}_combined_out.vcf |  awk '$1 ~ /^#/ {print $0;next} {print $0 | "sort -k1,1 -k2,2n"}' > ~{fam.child}.glnexus_denovo_actual.combined.vcf
     zcat ~{fam.child}.glnexus_denovo_actual.dv.vcf.gz  | grep '#' > ~{fam.child}.glnexus.family.combined_intersection.vcf
-    grep -v 'chrUn' ~{fam.child}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep  'AC=1' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> ~{fam.child}.glnexus.family.combined_intersection.vcf
-
+    if [ "~{fam.child_sex}" == "M" ]; then
+    grep -v 'chrUn' ~{fam.child}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrX' |grep -v 'chrY' | grep -v 'chrM' | grep  'AC=1;' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> ~{fam.child}.glnexus.family.combined_intersection.vcf
+    ( grep -v 'chrUn' ~{fam.child}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -w 'chrX' | grep -E 'AC=1;|AC=2;' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' ) >> ~{fam.child}.glnexus.family.combined_intersection.vcf || true
+    fi
 
     #Finds the order of the family position found within the combined .vcf file and what the order is in the family file (which should be in order of father, mother, child)
     echo 'Set up filter script'
@@ -443,9 +447,9 @@ task combinedAndFilter {
     /opt/conda/bin/python ~{filter_glnexuscombined_updated} ~{fam.child}.glnexus.family.combined_intersection.vcf $trio $actual ~{gq} ~{depth}
 
     echo "Make position file"
-    cat ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_20_depth_10.vcf | grep '#' > ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position.vcf
+    cat ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}.vcf | grep '#' > ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position.vcf
     echo "Make CpG file"
-    cat ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_20_depth_10.vcf | grep '#' > ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position_all.vcf
+    cat ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}.vcf | grep '#' > ~{fam.child}.glnexus.family.combined_intersection_filtered_gq_~{gq}_depth_~{depth}_position_all.vcf
     echo "Filter by position"
 
     if [ "~{region_check}" != "1" ]
