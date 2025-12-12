@@ -7,6 +7,7 @@ REFERENCE = config["reference"]
 FAMILY_FILE=config["family_file"]
 GATK_OUT=config["gatk_out"]
 DV_OUT=config["dv_out"]
+CHILD_SEX_FILE=config["child_sex_file"]
 GLNEXUS_FILE_DV_BCF=config["glnexus_file_dv_bcf"]
 GLNEXUS_FILE_HC_BCF=config["glnexus_file_hc_bcf"]
 GLNEXUS_FILE_DV_VCF=config["glnexus_file_dv_vcf"]
@@ -88,6 +89,13 @@ with open(FAMILY_FILE) as f:
 GQ_VALUES=[GQ_VALUE]
 DEPTH_VALUES=[DEPTH_VALUE]
 print(FAMILIES)
+hold_cs={}
+with open(CHILD_SEX_FILE) as f:
+    for line in f:
+        data=line.strip().split('\t')
+        hold_cs[data[0]]=data[1]
+def get_child_sex(wildcards):
+    return hold_cs[wildcards.family]
 def glnexus_intro_hc(wildcards):
     temp=[]
     FAMILY=wildcards.family
@@ -218,25 +226,35 @@ rule combinedAndFilter:
     /opt/conda/bin/python /dnv_wf_cpu/test_intersect.py -g {input[0]} -d {input[1]} -r $ref -c {CHROM_LENGTH}
     cat {OUT_DIR}/{params.prefix}/{params.prefix}_combined_out.vcf |  awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n"}}' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf
     zcat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.dv.vcf.gz  | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
-    grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep  'AC=1;' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
+
+    if [ "{params.child_sex}" == 'M' ]
+    then
+    grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep -v 'chrX' | grep -E 'AC=1;' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
+    ( grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -w 'chrX' | grep -E 'AC=1;|AC=2;' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' ) >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf || true
+    
+
+    else
+    grep -v 'chrUn' {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus_denovo_actual.combined.vcf | grep -v '_random' | grep -v '_alt'  | grep -v 'chrY' | grep -v 'chrM' | grep -E 'AC=1;' |  egrep -v 'AAAAAAAAAA|TTTTTTTTTT' >> {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf
+    fi
 
 
     #Finds the order of the family position found within the combined .vcf file and what the order is in the family file (which should be in order of father, mother, child)
     echo 'Set up filter script'
     actual=$( cat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf | grep '#' | tail -n 1 | cut -f 10-13 )
     echo $actual
-    temp=$( grep {params.prefix} {FAMILY_FILE} )
+    temp=$( awk -F',' -v c="{params.prefix}" '$3 == c' {FAMILY_FILE} )
     temp=$( echo $temp | cut -d',' -f 1-3 )
     trio=$( echo $temp | tr ',' ' ')
+
     echo $trio
     echo "Run filter script"
     #Python script that filters for parents with no alt allele, depth of set value, GQ of set value, and allele balance of .25
     /opt/conda/bin/python /dnv_wf_cpu/filter_glnexuscombined_updated.py {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection.vcf $trio $actual {params.gq} {params.depth}
 
     echo "Make position file"
-    cat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_20_depth_10.vcf | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_{params.gq}_depth_{params.depth}_position.vcf
+    cat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_{params.gq}_depth_{params.depth}.vcf | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_{params.gq}_depth_{params.depth}_position.vcf
     echo "Make CpG file"
-    cat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_20_depth_10.vcf | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_{params.gq}_depth_{params.depth}_position_all.vcf
+    cat {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_{params.gq}_depth_{params.depth}.vcf | grep '#' > {OUT_DIR}/{params.prefix}/{params.prefix}.glnexus.family.combined_intersection_filtered_gq_{params.gq}_depth_{params.depth}_position_all.vcf
     echo "Filter by position"
 
     if [ "{REGIONS}" != "1" ]
