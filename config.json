@@ -1,6 +1,7 @@
 {
   "reference": "/reference/GRCh38_full_analysis_set_plus_decoy_hla.fa",
   "family_file": "/dnv_wf_cpu/dnv_wf_test.txt",
+  "child_sex_file" : "sex_of_child.txt",
   "glnexus_file_dv_vcf": "/dnv_wf_cpu/dv_vcf",
   "glnexus_file_hc_vcf": "/dnv_wf_cpu/hc_vcf",
   "glnexus_file_dv_bcf": "/dnv_wf_cpu/dv_bcf",
